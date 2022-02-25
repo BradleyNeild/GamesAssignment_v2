@@ -3,9 +3,10 @@
 
 #include "MyPlayerController.h"
 #include "Components/InputComponent.h"
-//#include "MyMovementComponent.h"
-#include "PlayerPawn.h"
-#include "CO2301Assignment1GameModeBase.h"
+#include "PlayerCharacter.h"
+#include "MyCustomGameMode.h"
+#include "Kismet/GameplayStatics.h"
+#include "Blueprint/UserWidget.h"
 
 AMyPlayerController::AMyPlayerController() {
 	PrimaryActorTick.bCanEverTick = true;
@@ -16,7 +17,9 @@ void AMyPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	MyPawn = Cast<APlayerPawn>(GetPawn());
+	MyPawn = Cast<APlayerCharacter>(GetPawn());
+	GameModeRef = Cast<AMyCustomGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+
 }
 
 void AMyPlayerController::Tick(float DeltaTime)
@@ -28,13 +31,17 @@ void AMyPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 	check(InputComponent);
+	//Control bindings
+	//Requirement 11
 	InputComponent->BindAxis("Forward", this, &AMyPlayerController::CallMoveForward);
 	InputComponent->BindAxis("Right", this, &AMyPlayerController::CallMoveRight);
 	InputComponent->BindAxis("LookRight", this, &AMyPlayerController::CallTurnRight);
 	InputComponent->BindAxis("LookUp", this, &AMyPlayerController::CallTurnUp);
 
+	InputComponent->BindAction("Fire1", IE_Pressed, this, &AMyPlayerController::CallFire1);
+	InputComponent->BindAction("Fire2", IE_Pressed, this, &AMyPlayerController::CallFire2);
+
 	InputComponent->BindAction("Jump", IE_Pressed, this, &AMyPlayerController::CallJump);
-	InputComponent->BindAction("Jump", IE_Released, this, &AMyPlayerController::CallStopJumping);
 }
 
 void AMyPlayerController::CallMoveForward(float Value)
@@ -77,10 +84,30 @@ void AMyPlayerController::CallJump()
 	}
 }
 
-void AMyPlayerController::CallStopJumping()
+void AMyPlayerController::CallFire1()
 {
 	if (MyPawn)
 	{
-		MyPawn->StopJumping();
+		MyPawn->Fire1();
+	}
+}
+
+void AMyPlayerController::CallFire2()
+{
+	if (MyPawn)
+	{
+		MyPawn->Fire2();
+	}
+}
+
+float AMyPlayerController::GetHealth()
+{
+	if (MyPawn)
+	{
+		return MyPawn->Health;
+	}
+	else
+	{
+		return -1.0f;
 	}
 }

@@ -6,8 +6,8 @@
 #include "GameFramework/PlayerController.h"
 #include "MyPlayerController.generated.h"
 
-class APlayerPawn;
-class ACO2301Assignment1GameModeBase;
+class APlayerCharacter;
+class AMyCustomGameMode;
 
 UCLASS()
 class CO2301ASSIGNMENT1_API AMyPlayerController : public APlayerController
@@ -21,8 +21,14 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
+	
+	UPROPERTY(EditAnywhere, Category = "HUD CLASSS")
+		TSubclassOf<UUserWidget> MyHUDClass;
 	UPROPERTY()
-		ACO2301Assignment1GameModeBase* GameModeRef;
+		UUserWidget* MyPlayerHUD;
+
+	UPROPERTY()
+		AMyCustomGameMode* GameModeRef;
 
 		virtual void Tick(float DeltaTime) override;
 		virtual void SetupInputComponent();
@@ -36,11 +42,15 @@ public:
 		virtual void CallTurnRight(float Value);
 	UFUNCTION()
 		virtual void CallTurnUp(float Value);
-
 	UFUNCTION()
 		virtual void CallJump();
 	UFUNCTION()
-		virtual void CallStopJumping();
+		virtual void CallFire1();
+	UFUNCTION()
+		virtual void CallFire2();
+	UFUNCTION(BlueprintPure)
+		float GetHealth();
 
-	APlayerPawn* MyPawn;
+	UPROPERTY()
+	APlayerCharacter* MyPawn;
 };
